@@ -366,6 +366,30 @@ section{scroll-margin-top:52px}
 .pe-nota{font-size:12.5px;color:var(--anatomy-muted);margin:0;border-top:1px solid var(--rule);padding-top:10px}
 @media (max-width:380px){.logo{font-size:10.5px}}
 @media (max-width:440px){.anio{display:none}}
+/* 04 álgebra lineal */
+.sub{color:var(--anatomy-strong);font-size:18px;letter-spacing:-.01em;margin:30px 0 8px}
+.sistema{display:flex;align-items:center;gap:10px;margin:14px 0 6px;max-width:100%;overflow-x:auto;padding:4px 2px}
+.mat{position:relative;display:grid;grid-template-columns:repeat(3,auto);gap:3px 14px;padding:6px 12px;font:600 clamp(12px,3.4vw,15px)/1.35 var(--anatomy-mono);color:var(--anatomy-strong);font-variant-numeric:tabular-nums;text-align:right}
+.mat.v{grid-template-columns:auto}
+.mat::before,.mat::after{content:"";position:absolute;top:var(--tp,22px);bottom:0;width:6px;border:1.5px solid var(--anatomy-muted)}
+.mat::before{left:0;border-right:0}.mat::after{right:0;border-left:0}
+.mat .cab{font:600 10.5px/1.6 var(--anatomy-mono);color:var(--anatomy-muted);text-align:center;letter-spacing:.04em}
+.mat .pt{text-align:center;color:var(--anatomy-muted)}
+.sistema .op{font:600 20px var(--anatomy-mono);color:var(--anatomy-muted);padding-top:20px}
+.vectores{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:center;margin:4px 0 6px}
+.vectores svg{width:100%;height:auto;display:block;background:var(--card);border:1px solid var(--rule);border-radius:14px}
+.vectores .tablero.dos{margin:0;grid-template-columns:1fr}
+.vec path{fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.v1 path{stroke:var(--agua)}.v2 path{stroke:var(--energia)}
+.v2{transform-origin:24px 112px;transition:transform .8s cubic-bezier(.2,.8,.2,1)}
+.vectores text{font:600 11px var(--anatomy-mono);fill:var(--anatomy-muted)}
+.vectores .et1{fill:var(--agua)}.vectores .et2{fill:var(--energia);transition:all .8s cubic-bezier(.2,.8,.2,1)}
+.vectores .arco{fill:none;stroke:var(--anatomy-muted);stroke-width:1.2;stroke-dasharray:3 3}
+.vectores .o{fill:var(--anatomy-strong)}
+.tablero.cuatro{grid-template-columns:repeat(4,1fr)}
+@media (max-width:620px){.vectores{grid-template-columns:1fr}.vectores .tablero.dos{grid-template-columns:repeat(2,1fr)}.tablero.cuatro{grid-template-columns:repeat(2,1fr)}}
+@media (prefers-reduced-motion:reduce){.v2,.vectores .et2{transition:none}}
+.mat:not(:has(.cab)){--tp:0px}
 </style>
 </head>
 <body class="iso">
@@ -473,8 +497,60 @@ section{scroll-margin-top:52px}
     <div class="toma" data-toma hidden></div>
   </section>
 
+  <section id="algebra" class="bloque">
+    <h2 class="rv"><span class="n">04</span> El álgebra lineal arma las fórmulas</h2>
+    <p class="rv">Para derivar necesitamos fórmulas, y las fórmulas salen de las tomas. Cada toma de potencia da una ecuación: a·ω² + b·ω + c = P. A 20° tenemos <b>18 tomas y solo 3 incógnitas</b> (a, b y c). Es un sistema sobredeterminado: como toda medida trae un pequeño error, ninguna parábola pasa exacta por los 18 puntos. Escrito con matrices queda así:</p>
+    <div class="sistema rv" aria-label="Sistema A x ≈ P con las primeras tomas a 20 grados">
+      <div class="mat"><span class="cab">ω²</span><span class="cab">ω</span><span class="cab">1</span><span>2601</span><span>51</span><span>1</span><span>3025</span><span>55</span><span>1</span><span>3600</span><span>60</span><span>1</span><span class="pt">⋮</span><span class="pt">⋮</span><span class="pt">⋮</span><span>2601</span><span>51</span><span>1</span></div>
+      <div class="mat v"><span class="cab">x</span><span class="t-energia">a</span><span class="t-energia">b</span><span class="t-energia">c</span></div>
+      <b class="op">≈</b>
+      <div class="mat v"><span class="cab">P (W)</span><span>0,552</span><span>0,573</span><span>0,597</span><span class="pt">⋮</span><span>0,521</span></div>
+    </div>
+    <p class="nota">A: 18 filas × 3 columnas, una fila por toma (subiendo y bajando de 51 a 100 rpm). P: lo que midió el INA219.</p>
+    <p class="rv">Buscamos la parábola que deja el <b>menor error total</b>: mínimos cuadrados. Si se multiplica todo por la transpuesta de A, las 18 ecuaciones se vuelven 3 con 3 incógnitas, que sí tienen solución única. Son las ecuaciones normales:</p>
+    <p class="formula rv">Aᵀ A · x = Aᵀ P   →   x = (a, b, c)</p>
+    <p class="rv">Con el caudal es igual, pero con una recta: dos columnas (ω y 1) y dos incógnitas (m y q₀).</p>
+
+    <h3 class="sub rv">El problema escondido: columnas casi paralelas</h3>
+    <p class="rv">Cada columna de A es un vector de 18 números. Si dos columnas apuntan casi en la misma dirección, el sistema se vuelve frágil: un error diminuto en una toma cambia mucho los coeficientes. Eso lo mide el <b>número de condición</b> de AᵀA. Compara:</p>
+    <div class="tabs rv" role="tablist" aria-label="Cómo se escribe ω en la matriz">
+      <button type="button" role="tab" data-escala="crudo" aria-selected="true">ω tal cual</button>
+      <button type="button" role="tab" data-escala="centrado" aria-selected="false">ω centrado y escalado</button>
+    </div>
+    <div class="vectores rv">
+      <svg viewBox="0 0 220 130" aria-hidden="true">
+        <path class="arco" data-arco d=""/>
+        <g class="vec v1"><path d="M24 112H196"/><path d="M188 106L198 112L188 118"/></g>
+        <g class="vec v2" data-v2><path d="M24 112H196"/><path d="M188 106L198 112L188 118"/></g>
+        <text x="200" y="128" text-anchor="end" class="et1" data-et1>columna ω</text>
+        <text class="et2" data-et2 x="0" y="0">columna ω²</text>
+        <circle cx="24" cy="112" r="3.5" class="o"/>
+      </svg>
+      <div class="tablero dos">
+        <div class="dato efic" data-k-ang><span>ángulo entre ω² y ω</span><b data-ang>11,2°</b><small data-ang-t>casi paralelas</small></div>
+        <div class="dato energia" data-k-cond><span>número de condición de AᵀA</span><b data-cond>2,4 × 10¹⁰</b><small data-cond-t>muy frágil</small></div>
+      </div>
+    </div>
+    <p class="rv" data-escala-txt>Con ω entre 51 y 100, las columnas ω² y ω casi se superponen: el número de condición es de 24 mil millones.</p>
+    <p class="rv">La solución fue <b>centrar y escalar</b> la velocidad antes de armar la matriz: u = (ω − 73,1) / 16,2. Así las columnas quedan casi perpendiculares y el número de condición baja a 9,1 a 20° y a 10,8 a 30°. Con a, b y c ya calculados en u, se devuelven a ω con un cambio de variable.</p>
+
+    <h3 class="sub rv">Qué tan bien quedaron</h3>
+    <div class="tablero cuatro rv">
+      <div class="dato energia"><span>P a 20° · 18 tomas</span><b>0,905</b><small>R²</small></div>
+      <div class="dato energia"><span>P a 30° · 9 tomas</span><b>0,996</b><small>R²</small></div>
+      <div class="dato agua"><span>Q a 20°</span><b>0,948</b><small>R²</small></div>
+      <div class="dato agua"><span>Q a 30°</span><b>0,859</b><small>R²</small></div>
+    </div>
+    <p class="nota">R² cerca de 1 significa que la fórmula explica casi toda la variación de las tomas. El caudal a 30° queda por debajo de la meta de 0,95, porque cambia poco frente a la resolución de la jeringa: así lo declaramos en el informe.</p>
+
+    <h3 class="sub rv">Y la forma del tornillo también es álgebra</h3>
+    <p class="rv">La hélice del modelo 3D se genera con una <b>matriz de rotación</b>: cada punto del filete gira un ángulo θ alrededor del eje y avanza a lo largo de él en proporción al giro (p es el paso de la hélice).</p>
+    <p class="formula rv">(x,y,z) = R(θ)·(r,0,0) + (0,0,pθ/2π)</p>
+    <div class="sistema rv" aria-label="Matriz de rotación R de theta"><b class="op" style="padding-top:0">R(θ) =</b><div class="mat" style="padding-top:6px"><span>cos θ</span><span>−sen θ</span><span>0</span><span>sen θ</span><span>cos θ</span><span>0</span><span>0</span><span>0</span><span>1</span></div></div>
+  </section>
+
   <section id="derivada" class="bloque">
-    <h2 class="rv"><span class="n">04</span> La derivada decide</h2>
+    <h2 class="rv"><span class="n">05</span> La derivada decide</h2>
     <p class="rv">La eficiencia es η = Q/P: agua subida dividida por energía gastada. Con los datos ajustamos dos fórmulas, Q(ω) = mω + q₀ para el caudal y P(ω) = aω² + bω + c para la potencia. Al derivar η con la regla del cociente, el signo de la derivada solo depende de esta parte:</p>
     <p class="formula rv">N(ω) = −a·m·ω² − 2a·q₀·ω + (m·c − b·q₀)</p>
     <p class="rv">Arrastra el punto sobre la curva. La recta tangente muestra la derivada: si sube (<b class="t-efic">verde</b>), conviene girar más rápido; si baja (<b class="t-rojo">roja</b>), más despacio.</p>
@@ -495,7 +571,7 @@ section{scroll-margin-top:52px}
   </section>
 
   <section id="control" class="bloque">
-    <h2 class="rv"><span class="n">05</span> El ESP32 lo encuentra solo</h2>
+    <h2 class="rv"><span class="n">06</span> El ESP32 lo encuentra solo</h2>
     <p class="rv">El ESP32 hace lo mismo que la derivada, pero midiendo: prueba una velocidad, prueba la siguiente y compara la eficiencia. Si mejoró, sigue en esa dirección; si empeoró, se devuelve y da pasos más cortos. Ignora diferencias menores a 0,008, que es el error normal de medir con jeringa.</p>
     <div class="grafica rv" data-chart="control"></div>
     <div class="consola rv" aria-live="polite"><pre data-consola></pre></div>
@@ -504,7 +580,7 @@ section{scroll-margin-top:52px}
   </section>
 
   <section id="hallazgo" class="bloque">
-    <h2 class="rv"><span class="n">06</span> El hallazgo: el agua casi no pesa</h2>
+    <h2 class="rv"><span class="n">07</span> El hallazgo: el agua casi no pesa</h2>
     <p class="rv">Medimos la potencia con el tornillo mojado y el depósito vacío. Sale casi igual que subiendo agua: el consumo es del motor y su reductora. Subir 0,2 L/min unas decenas de centímetros cuesta del orden de 10 mW, menos del 2 % de lo que mide el sensor.</p>
     <div class="grafica rv" data-chart="vacio"></div>
     <p class="leyenda"><i class="cagua"></i>con agua (ajuste de las tomas) <i class="cvacio"></i>en vacío (medido)</p>
@@ -512,7 +588,7 @@ section{scroll-margin-top:52px}
   </section>
 
   <section id="medir" class="bloque">
-    <h2 class="rv"><span class="n">07</span> Cómo medimos</h2>
+    <h2 class="rv"><span class="n">08</span> Cómo medimos</h2>
     <div class="tarjetas">
       <article class="rv">
         <svg class="mini" viewBox="0 0 120 120" aria-hidden="true" data-disco></svg>
@@ -533,7 +609,7 @@ section{scroll-margin-top:52px}
   </section>
 
   <section id="equipo" class="bloque">
-    <h2 class="rv"><span class="n">08</span> Equipo</h2>
+    <h2 class="rv"><span class="n">09</span> Equipo</h2>
     <ul class="equipo">
       <li class="rv"><b>Laura Alejandra Rodríguez Niño</b><span>Ingeniería Civil</span></li>
       <li class="rv"><b>Juan José Betancourt Quintero</b><span>Ingeniería de Sistemas</span></li>
@@ -2055,5 +2131,33 @@ disco.innerHTML = `<g data-gira><circle class="f" cx="60" cy="60" r="46"/>${Arra
 $("[data-ina]").innerHTML = `<rect class="f" x="18" y="30" width="84" height="56" rx="5"/><rect class="e" x="42" y="46" width="36" height="14" rx="2"/><text x="60" y="56.5" text-anchor="middle" style="fill:#111">R100</text><circle class="l" cx="30" cy="76" r="4"/><circle class="l" cx="90" cy="76" r="4"/><path class="l" d="M4 76H26M94 76H116"/><text x="60" y="108" text-anchor="middle">P = V · I</text>`;
 $("[data-jarra]").innerHTML = `<path class="f" d="M30 22H86V96Q86 104 78 104H38Q30 104 30 96Z"/><rect class="a" data-agua x="31" y="48" width="54" height="55" rx="2"/><path class="l" d="M86 34H96Q100 34 100 40V66Q100 72 94 72H86"/><path class="l" d="M36 40H44M36 56H44M36 72H44M36 88H44"/><text x="60" y="117" text-anchor="middle">60 s</text>`;
 new IntersectionObserver((es) => $("#medir").classList.toggle("vivo", es[es.length - 1].isIntersecting)).observe($("#medir"));
+
+// ── 04 álgebra: columnas de A según cómo se escribe ω ────────────────────────
+{
+  const ESC = {
+    crudo: { ang: 11.2, angT: "casi paralelas", cond: "2,4 × 10¹⁰", condT: "muy frágil", txt: "Con ω entre 51 y 100, las columnas ω² y ω casi se superponen: el número de condición es de 24 mil millones." },
+    centrado: { ang: 78.7, angT: "casi perpendiculares", cond: "9,1", condT: "estable", txt: "Con u centrada y escalada, las columnas u² y u quedan a casi 79°: el número de condición baja de 24 mil millones a 9,1." },
+  };
+  const v2 = $("[data-v2]"), et2 = $("[data-et2]"), arco = $("[data-arco]");
+  const pon = (k) => {
+    const e = ESC[k], r = (e.ang * Math.PI) / 180, R = 70;
+    v2.style.transform = `rotate(${-e.ang}deg)`;
+    const x = 24 + 172 * Math.cos(r), y = 112 - 172 * Math.sin(r);
+    et2.setAttribute("x", Math.min(x + 6, 150).toFixed(1));
+    et2.setAttribute("y", Math.max(y - 4, 12).toFixed(1));
+    et2.textContent = k === "crudo" ? "columna ω²" : "columna u²";
+    $("[data-et1]").textContent = k === "crudo" ? "columna ω" : "columna u";
+    arco.setAttribute("d", `M${24 + R} 112A${R} ${R} 0 0 0 ${(24 + R * Math.cos(r)).toFixed(1)} ${(112 - R * Math.sin(r)).toFixed(1)}`);
+    $("[data-ang]").textContent = e.ang.toFixed(1).replace(".", ",") + "°";
+    $("[data-ang-t]").textContent = e.angT;
+    $("[data-cond]").textContent = e.cond;
+    $("[data-cond-t]").textContent = e.condT;
+    $("[data-k-cond]").className = "dato " + (k === "crudo" ? "energia" : "efic");
+    $("[data-escala-txt]").textContent = e.txt;
+    $$("[data-escala]").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.escala === k)));
+  };
+  $$("[data-escala]").forEach((b) => b.addEventListener("click", () => pon(b.dataset.escala)));
+  pon("crudo");
+}
 </script>
 </html>
